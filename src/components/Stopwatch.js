@@ -2,12 +2,12 @@ import React, {useState, useEffect} from "react";
 import './Stopwatch.css'
 
 var runningTime = "" ;
+var lapTime = "" ;
 var currentState = "Stopped" ;
 function Stopwatch()
 {
 
     var prevTime = undefined;
-    var lapTime = "" ;
 
     const [ mainDisplay , setMainDisplay ] = useState( "00:00.00" );
     const [ lapDisplay , setLapDisplay ] = useState( "00:00.00" );
@@ -24,6 +24,8 @@ function Stopwatch()
         if( currentState === "Running" )
         {
             currentState = "Paused" ;
+            setBut2Label( "resume" );
+            setBut1Label( "reset" );
         }
         else{
             if( currentState === "Stopped" )
@@ -32,6 +34,8 @@ function Stopwatch()
                 lapTime = 0;
                 setHistory([]);
             }
+            setBut2Label( "pause" );
+            setBut1Label( "lap" );
             currentState = "Running" ;
             updateTime();
         }
@@ -40,7 +44,19 @@ function Stopwatch()
 
     function resetAndLapStopwatch()
     {
-
+        if( currentState === "Running" )
+        {
+            history.push( [ lapDisplay , mainDisplay ] );
+            lapTime = 0;
+        }
+        else{
+            setMainDisplay( "00:00.00" );
+            setLapDisplay( "00:00.00" );
+            runningTime = 0;
+            lapTime = 0;
+            setHistory([]);
+            setBut2Label( "start" );
+        }
     }
 
     function updateTime()
@@ -56,11 +72,26 @@ function Stopwatch()
         let runningDate = new Date(0);
         runningDate.setMinutes(0);
         runningDate.setMilliseconds(runningTime);
+
+        lapTime += 20;
+        let lapDate = new Date(0);
+        lapDate.setMinutes(0);
+        lapDate.setMilliseconds(lapTime);
+
         let m = (""+runningDate.getMinutes()).padStart( 2 , "0" );
         let s = (""+runningDate.getSeconds()).padStart( 2 , "0" );
         let ms = (""+runningDate.getMilliseconds()).substring(0,2).padStart(2,"0");
         setMainDisplay( m + ":" + s + "." + ms );
+    
+        let ml = (""+lapDate.getMinutes()).padStart( 2 , "0" );
+        let sl = (""+lapDate.getSeconds()).padStart( 2 , "0" );
+        let msl = (""+lapDate.getMilliseconds()).substring(0,2).padStart(2,"0");
+        setLapDisplay( ml + ":" + sl + "." + msl );
+    
+    
         setTimeout( updateTime , 20 );
+    
+    
     }
 
 
